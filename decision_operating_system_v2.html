@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>6-Dimension Decision Operating System</title>
+<style>
+:root{--bg:#f5f5f2;--card:#fff;--text:#222;--muted:#686862;--line:#dddcd5;--soft:#efefea;--accent:#222}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5}
+.wrap{max-width:1000px;margin:auto;padding:42px 20px 70px}
+header{text-align:center;margin-bottom:34px}
+h1{font-size:clamp(2rem,5vw,3rem);letter-spacing:-.035em;margin:0 0 8px}
+.subtitle{color:var(--muted);margin:0}
+.intro{max-width:760px;margin:16px auto 0;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:25px;margin:18px 0;box-shadow:0 3px 15px #00000008}
+.head{display:flex;gap:14px;align-items:flex-start}
+.num{width:38px;height:38px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;font-weight:700;flex:none}
+h2{margin:0;font-size:1.35rem}
+.question{margin:3px 0 0;color:var(--muted)}
+.explanation{margin:18px 0 0;padding:15px;background:var(--soft);border-radius:10px;color:#444}
+.explanation strong{display:block;margin-bottom:4px}
+.scale-title{font-size:.9rem;color:var(--muted);margin-top:19px}
+.score-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:9px}
+.score{border:1px solid var(--line);background:#fafaf8;border-radius:9px;padding:10px 6px;cursor:pointer;font-weight:650}
+.score:hover{border-color:#888}
+.score.selected{background:var(--accent);color:white;border-color:var(--accent)}
+.score-label{font-size:.72rem;color:var(--muted);margin-top:6px;text-align:center}
+.prob-group{margin-top:18px}
+.prob-title{font-weight:650;margin-bottom:8px}
+.prob-grid{display:flex;flex-wrap:wrap;gap:7px}
+.prob{border:1px solid var(--line);background:#fafaf8;border-radius:8px;padding:8px 12px;cursor:pointer}
+.prob.selected{background:var(--accent);color:#fff;border-color:var(--accent)}
+.formula{margin-top:18px;padding:14px;border-radius:10px;background:var(--soft);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88rem;overflow:auto}
+.result{background:white;border:2px solid #222;border-radius:18px;padding:28px;margin-top:30px}
+.result h2{margin-bottom:4px}
+.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:18px}
+.metric{border:1px solid var(--line);border-radius:12px;padding:17px}
+.metric-name{color:var(--muted);font-size:.9rem}
+.metric-value{font-size:2rem;font-weight:800;margin-top:2px}
+.bars{margin-top:24px;display:grid;gap:13px}
+.row{display:grid;grid-template-columns:170px 1fr 52px;gap:10px;align-items:center}
+.bar{height:10px;background:#e8e8e3;border-radius:99px;overflow:hidden}
+.fill{height:100%;background:#333;border-radius:inherit}
+.guidance{margin-top:22px;padding:16px;background:#fafaf8;border:1px solid var(--line);border-radius:11px}
+.actions{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+.primary,.secondary{border-radius:9px;padding:11px 16px;font-weight:650;cursor:pointer}
+.primary{background:#222;color:white;border:1px solid #222}
+.secondary{background:white;border:1px solid var(--line)}
+footer{text-align:center;color:var(--muted);font-size:.83rem;margin-top:34px}
+@media(max-width:650px){.wrap{padding:28px 13px 50px}.card{padding:19px}.score-grid{grid-template-columns:repeat(3,1fr)}.metrics{grid-template-columns:1fr}.row{grid-template-columns:110px 1fr 42px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>6-Dimension Decision Operating System</h1>
+<p class="subtitle">A structured framework for making decisions under uncertainty.</p>
+<p class="intro">Evaluate a decision across six dimensions: information, expected return, risk resilience, optionality, time horizon, and learning value.</p>
+</header>
+
+<section class="card decision-card">
+  <div class="head">
+    <div class="num">0</div>
+    <div style="flex:1">
+      <h2>Your Decision</h2>
+      <p class="question">What decision are you evaluating?</p>
+      <input
+        type="text"
+        id="decisionInput"
+        class="decision-input"
+        placeholder="Type your decision here..."
+        autocomplete="off"
+ 	style="width:100%; margin-top:14px; padding:13px 14px; border:1px solid var(--line); border-radius:9px; background:#fafaf8; color:var(--text); font:inherit; font-size:1rem;"
+      >
+    </div>
+  </div>
+</section>
+
+<div id="app"></div>
+
+<section class="result">
+<h2>Decision Profile</h2>
+<div id="decisionDisplay" style="margin-top:5px;color:var(--muted);"></div>
+<div class="metrics">
+<div class="metric"><div class="metric-name">Expected Return</div><div class="metric-value" id="er">—</div></div>
+<div class="metric"><div class="metric-name">Risk Resilience</div><div class="metric-value" id="rr">—</div></div>
+</div>
+<div class="bars" id="bars"></div>
+<div class="guidance" id="guidance">Complete the relevant dimensions and generate your decision profile.</div>
+<div class="actions">
+<button class="primary" onclick="calculate()">Generate Decision Profile</button>
+<button class="secondary" onclick="resetAll()">Reset</button>
+</div>
+</section>
+
+<footer>6-Dimension Decision Operating System · William Fonglap Wang</footer>
+</div>
+
+<script>
+const dimensions=[
+{
+id:"information",title:"Information Quality",
+question:"How strong is your information?",
+explanation:"Measures how confident you should be in your understanding of the situation. Better information reduces uncertainty and the chance of making a decision based mainly on assumptions.",
+scores:[
+["5","Strong evidence","Multiple reliable sources; high confidence"],
+["4","Substantial","Good data and reasoning; few important gaps"],
+["3","Reasonable","Enough information for a practical judgment"],
+["2","Experience-based","Some useful knowledge, but significant uncertainty"],
+["1","Assumption-driven","Limited evidence; important assumptions remain"],
+["0","Speculation","Little or no reliable information"]
+]},
+{
+id:"return",title:"Expected Return",
+question:"What is the probability-weighted attractiveness of the possible outcomes?",
+explanation:"Separates possible outcomes from their probabilities. A favorable outcome contributes strongly, a base outcome contributes moderately, and an adverse outcome subtracts value. Distribution confidence then scales the result according to how reliable your probability distribution is.",
+prob:true,
+formula:"ER = [Favorable probability × 6 + Base probability × 3 + Adverse probability × −1] × Distribution confidence"
+},
+{
+id:"risk",title:"Risk Resilience",
+question:"How survivable is failure, and how well do you understand the downside?",
+explanation:"Measures whether a bad outcome can be absorbed without breaking the system. A survivable risk becomes more attractive when you have a strong understanding of the downside; poor risk understanding reduces the effective resilience.",
+risk:true,
+formula:"RR = Impact level × (0.5 + 0.5 × Risk understanding confidence / 5)",
+scores:[
+["5","Minimal impact","Failure has little meaningful consequence"],
+["4","Low impact","Failure is uncomfortable but easily absorbed"],
+["3","Manageable","Failure creates a meaningful setback but remains survivable"],
+["2","Survivable","Failure is serious and recovery requires substantial resources"],
+["1","Difficult recovery","Failure could severely impair the system"],
+["0","Catastrophic","Failure could cause irreversible or unacceptable damage"]
+]},
+{
+id:"optionality",title:"Optionality",
+question:"How easy is it to change, delay, reduce, or reverse the decision?",
+explanation:"Measures the value of keeping future choices open. Flexible decisions allow you to respond to new information; irreversible decisions expose you to more uncertainty.",
+scores:[
+["5","Maximum flexibility","Many alternatives; easy to change course"],
+["4","Highly flexible","Can alter or exit with minor cost"],
+["3","Moderate","Some meaningful alternatives remain"],
+["2","Limited","Changing course is difficult or costly"],
+["1","Very limited","Decision is hard to reverse"],
+["0","Irreversible","Little or no meaningful exit option"]
+]},
+{
+id:"time",title:"Time Horizon",
+question:"How quickly will reality provide feedback?",
+explanation:"Measures the speed at which you can observe whether the decision is working. Faster feedback allows mistakes to be detected and corrected earlier; long feedback cycles increase uncertainty.",
+scores:[
+["5","Days","Feedback arrives within days"],
+["4","Weeks","Feedback arrives within weeks"],
+["3","Months","Feedback arrives within months"],
+["2","Quarters","Feedback requires several months"],
+["1","Years","Feedback requires one or more years"],
+["0","Decade+","Feedback takes many years"]
+]},
+{
+id:"learning",title:"Learning Value",
+question:"What value remains even if the outcome is not what you hoped?",
+explanation:"Measures whether the decision creates knowledge, skills, capabilities, relationships, or other durable value. A decision can therefore have positive value even when its immediate outcome is poor.",
+scores:[
+["5","Major growth","Creates significant durable capability or insight"],
+["4","Valuable gain","Creates a strong transferable capability"],
+["3","Meaningful","Produces useful knowledge or experience"],
+["2","Some value","Provides limited but useful learning"],
+["1","Small lesson","Produces a minor lesson"],
+["0","Nothing gained","Little or no residual value"]
+]}
+];
+
+let state={
+information:null,optionality:null,time:null,learning:null,
+return:{f:null,b:null,a:null,c:null},
+risk:{impact:null,confidence:null}
+};
+
+function makeCard(d,i){
+let html=`<section class="card"><div class="head"><div class="num">${i+1}</div><div><h2>${d.title}</h2><p class="question">${d.question}</p></div></div>
+<div class="explanation"><strong>What this dimension measures</strong>${d.explanation}</div>`;
+if(d.prob){
+html+=probGroup("Favorable case probability","f")+probGroup("Base case probability","b")+probGroup("Adverse case probability","a")+probGroup("Distribution confidence","c");
+html+=`<div class="formula">${d.formula}</div>`;
+}else{
+html+=`<div class="scale-title">Score</div><div class="score-grid">`;
+d.scores.forEach(s=>html+=`<button class="score" onclick="selectScore('${d.id}',${s[0]},this)">${s[0]}</button>`);
+html+=`</div><div class="score-grid" style="margin-top:4px">`;
+d.scores.forEach(s=>html+=`<div class="score-label"><strong>${s[1]}</strong><br>${s[2]}</div>`);
+html+=`</div>`;
+if(d.risk)html+=`<div class="prob-group"><div class="prob-title">Risk understanding confidence</div><div class="score-grid">${d.scores.map(s=>`<button class="score" onclick="selectRiskConfidence(${s[0]},this)">${s[0]}</button>`).join("")}</div><div class="formula">${d.formula}</div></div>`;
+}
+return html+"</section>";
+}
+
+function probGroup(label,key){
+return `<div class="prob-group"><div class="prob-title">${label}</div><div class="prob-grid">
+${[90,80,70,60,50,40,30,20,10].map(v=>`<button class="prob" onclick="selectProb('${key}',${v},this)">${v}%</button>`).join("")}
+</div></div>`;
+}
+
+document.getElementById("app").innerHTML=dimensions.map(makeCard).join("");
+
+function selectScore(id,v,btn){
+    if(id==="risk"){
+        state.risk.impact=v;
+    }else{
+        state[id]=v;
+    }
+
+    [...btn.parentElement.children].forEach(x=>x.classList.remove("selected"));
+    btn.classList.add("selected");
+}
+function selectRiskConfidence(v,btn){
+state.risk.confidence=v;
+[...btn.parentElement.children].forEach(x=>x.classList.remove("selected"));
+btn.classList.add("selected");
+}
+function selectProb(key,v,btn){
+state.return[key]=v;
+[...btn.parentElement.children].forEach(x=>x.classList.remove("selected"));
+btn.classList.add("selected");
+}
+function calculate(){
+const decision = document.getElementById("decisionInput").value.trim();
+
+document.getElementById("decisionDisplay").textContent =
+    decision ? "Decision: " + decision : "";
+let er=null,rr=null;
+const r=state.return;
+if([r.f,r.b,r.a,r.c].every(v=>v!==null)){
+er=((r.f/100)*6+(r.b/100)*3+(r.a/100)*-1)*(r.c/100);
+}
+if(state.risk.impact!==null&&state.risk.confidence!==null){
+rr=state.risk.impact*(0.5+0.5*state.risk.confidence/5);
+}
+document.getElementById("er").textContent=er===null?"—":er.toFixed(2);
+document.getElementById("rr").textContent=rr===null?"—":rr.toFixed(2);
+
+const vals=[
+["Information Quality",state.information],
+["Expected Return",er],
+["Risk Resilience",rr],
+["Optionality",state.optionality],
+["Time Horizon",state.time],
+["Learning Value",state.learning]
+];
+const bars=document.getElementById("bars");bars.innerHTML="";
+vals.forEach(([name,v])=>{
+if(v===null)return;
+let pct=name==="Expected Return"?Math.max(0,Math.min(100,(v/5)*100)):(v/5)*100;
+bars.innerHTML+=`<div class="row"><div>${name}</div><div class="bar"><div class="fill" style="width:${pct}%"></div></div><div>${v.toFixed(2)}</div></div>`;
+});
+let completed=vals.filter(x=>x[1]!==null);
+if(!completed.length){document.getElementById("guidance").textContent="Complete the relevant dimensions and generate your decision profile.";return}
+let lowest=[...completed].sort((a,b)=>a[1]-b[1])[0];
+document.getElementById("guidance").textContent=`Weakest scored dimension: ${lowest[0]} (${lowest[1].toFixed(2)}). Consider whether this is the limiting factor before committing significant resources.`;
+}
+function resetAll(){location.reload()}
+</script>
+</body>
+</html>
